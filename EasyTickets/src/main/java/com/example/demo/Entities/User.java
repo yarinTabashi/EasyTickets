@@ -1,5 +1,6 @@
 package com.example.demo.Entities;
 import jakarta.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "user", schema = "public")
@@ -23,6 +24,13 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_preferences",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    Set<Category> likedCategories;
+
     public User(){
 
     }
@@ -33,6 +41,14 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
+    }
+
+    public Set<Category> getLikedCategories() {
+        return likedCategories;
+    }
+
+    public void setLikedCategories(Set<Category> likedCategories) {
+        this.likedCategories = likedCategories;
     }
 
     public Long getId() {

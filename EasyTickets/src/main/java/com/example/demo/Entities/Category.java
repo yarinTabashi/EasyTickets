@@ -1,6 +1,8 @@
 package com.example.demo.Entities;
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "category")
 public class Category {
@@ -14,16 +16,28 @@ public class Category {
     @Column(name = "image_id")
     private Long image_id;
 
-    // Constructors
-    public Category() {
-    }
+    @ManyToMany(mappedBy = "likedCategories")
+    Set<User> likes;
 
+    // Constructors
+    public Category(){
+
+    }
     public Category(String name, Long image_id) {
         this.name = name;
         this.image_id = image_id;
     }
 
     // Getters and setters
+
+    public Set<User> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<User> likes) {
+        this.likes = likes;
+    }
+
     public Long getCategoryID() {
         return id;
     }
