@@ -1,27 +1,83 @@
 package com.example.demo.Entities;
+import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "seat", schema = "public")
 public class Seat {
-    private int seatX;
-    private int seatY;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "row_number")
+    private int rowNumber;
+    @Column(name = "seat_number")
+    private int seatNumber;
+    @Column(name = "available")
+    private boolean available;
+    @Column(name = "price", precision = 10, scale = 2)
+    private BigDecimal price;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
-    public Seat(int seatX, int seatY){
-        this.seatX = seatX;
-        this.seatY = seatY;
+    public Seat(){
+
     }
 
-    public int getSeatX() {
-        return seatX;
+    public Seat(int rowNumber, int seatNumber, boolean available, BigDecimal price, Event event) {
+        this.rowNumber = rowNumber;
+        this.seatNumber = seatNumber;
+        this.available = available;
+        this.price = price;
+        this.event = event;
     }
 
-    public void setSeatX(int seatX) {
-        this.seatX = seatX;
+    public Long getId() {
+        return id;
     }
 
-    public int getSeatY() {
-        return seatY;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setSeatY(int seatY) {
-        this.seatY = seatY;
+    public int getRowNumber() {
+        return rowNumber;
+    }
+
+    public void setRowNumber(int rowNumber) {
+        this.rowNumber = rowNumber;
+    }
+
+    public int getSeatNumber() {
+        return seatNumber;
+    }
+
+    public void setSeatNumber(int seatNumber) {
+        this.seatNumber = seatNumber;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }

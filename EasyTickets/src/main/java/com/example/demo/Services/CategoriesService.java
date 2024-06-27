@@ -22,7 +22,6 @@ public class CategoriesService {
     @Autowired
     public CategoriesService(CategoryRepository categoryRepository, UserRepository userRepository){
         this.categoryRepository = categoryRepository;
-        //this.userPreferencesRepository = userPreferencesRepository;
         this.userRepository = userRepository;
     }
 

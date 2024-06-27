@@ -1,6 +1,6 @@
 package com.example.demo.Entities;
 import jakarta.persistence.*;
-
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -9,7 +9,6 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "cat_name")
     private String name;
 
@@ -19,10 +18,30 @@ public class Category {
     @ManyToMany(mappedBy = "likedCategories")
     Set<User> likes;
 
+    @OneToMany(mappedBy = "category")
+    List<Event> eventsList;
+
     // Constructors
     public Category(){
 
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<Event> getEventsList() {
+        return eventsList;
+    }
+
+    public void setEventsList(List<Event> eventsList) {
+        this.eventsList = eventsList;
+    }
+
     public Category(String name, Long image_id) {
         this.name = name;
         this.image_id = image_id;

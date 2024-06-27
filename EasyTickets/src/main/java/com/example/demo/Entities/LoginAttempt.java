@@ -18,9 +18,7 @@ public class LoginAttempt {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Constructors, getters, and setters
     public LoginAttempt() {
-        // Default constructor required by JPA
     }
 
     public LoginAttempt(String email, boolean success, LocalDateTime createdAt) {
