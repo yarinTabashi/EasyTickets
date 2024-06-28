@@ -2,12 +2,13 @@ package com.example.demo.Services;
 import com.example.demo.Entities.Event;
 import com.example.demo.Entities.Seat;
 import com.example.demo.Repositories.SeatRepository;
-
+import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class SeatService {
     private final SeatRepository seatRepository;
 
@@ -39,8 +40,8 @@ public class SeatService {
     public void createSeats(Event event) {
         List<Seat> seats = new ArrayList<>();
 
-        int totalRows = 10;
-        int seatsPerRow = 10;
+        int totalRows = 3;
+        int seatsPerRow = 3;
 
         for (int row = 1; row <= totalRows; row++) {
             for (int seatNum = 1; seatNum <= seatsPerRow; seatNum++) {

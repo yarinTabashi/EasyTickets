@@ -3,6 +3,7 @@ import com.example.demo.DTOs.EventDTO;
 import com.example.demo.Entities.Event;
 import com.example.demo.Services.EventService;
 import com.example.demo.Services.SeatService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -25,6 +26,7 @@ public class EventController {
     }
 
     @PostMapping()
+    @Transactional
     public void createEvent(@RequestBody EventDTO eventDTO) {
         // Create the event object and save it in the db
         Event event = eventService.createEvent(eventDTO);

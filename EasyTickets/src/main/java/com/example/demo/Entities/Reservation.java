@@ -9,19 +9,20 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "user")
     private User user;
 
     @Column(name = "reservation_date")
     private Date reservationDate;
-    @Column(name = "seat_id")
+
+    @Column(name = "seat")
     private Seat seat;
 
     public Reservation(){
     }
 
     public Reservation(User user, Date reservationDate, Seat seat) {
-        this.id = id;
         this.user = user;
         this.reservationDate = reservationDate;
         this.seat = seat;

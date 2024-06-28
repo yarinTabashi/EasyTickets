@@ -1,9 +1,11 @@
 package com.example.demo.Services;
 import com.example.demo.Entities.Reservation;
 import com.example.demo.Repositories.ReservationRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ReservationService {
     private ReservationRepository reservationRepository;
 

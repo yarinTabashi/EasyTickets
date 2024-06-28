@@ -1,11 +1,11 @@
 package com.example.demo.Entities;
 import jakarta.persistence.*;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "seat", schema = "public")
-public class Seat {
+public class Seat implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,7 +18,7 @@ public class Seat {
     @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
     @ManyToOne
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event")
     private Event event;
 
     public Seat(){

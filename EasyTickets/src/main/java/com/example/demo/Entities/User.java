@@ -1,5 +1,7 @@
 package com.example.demo.Entities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,11 +26,16 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Reservation> reservations;
+
     @ManyToMany
+    @JsonIgnore
     @JoinTable(
             name = "user_preferences",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "category"))
     Set<Category> likedCategories;
 
     public User(){

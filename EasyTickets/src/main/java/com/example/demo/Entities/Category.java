@@ -1,4 +1,5 @@
 package com.example.demo.Entities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 import java.util.Set;
@@ -12,13 +13,15 @@ public class Category {
     @Column(name = "cat_name")
     private String name;
 
-    @Column(name = "image_id")
-    private Long image_id;
+    @Column(name = "image")
+    private Long image;
 
     @ManyToMany(mappedBy = "likedCategories")
+    @JsonIgnore
     Set<User> likes;
 
     @OneToMany(mappedBy = "category")
+    @JsonIgnore
     List<Event> eventsList;
 
     // Constructors
@@ -42,9 +45,9 @@ public class Category {
         this.eventsList = eventsList;
     }
 
-    public Category(String name, Long image_id) {
+    public Category(String name, Long image) {
         this.name = name;
-        this.image_id = image_id;
+        this.image = image;
     }
 
     // Getters and setters
@@ -74,10 +77,10 @@ public class Category {
     }
 
     public Long getImage_id(){
-        return this.image_id;
+        return this.image;
     }
 
-    public void setImage_id(Long imageId){
-        this.image_id = imageId;
+    public void setImage_id(Long image){
+        this.image = image;
     }
 }
