@@ -8,9 +8,7 @@ import com.example.demo.mysecurity.JwtHelper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // The service handles on categories repository and user preferences repository.
@@ -96,5 +94,31 @@ public class CategoriesService {
                 .collect(Collectors.toSet());
 
         return likedCategoriesDTO;
+    }
+
+    public Map<String, Boolean> getUserPreferencesMapping(String token) {
+        String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Set<Category> likedCategories = user.getLikedCategories();
+
+            // Fetch all categories from the database
+            List<Category> allCategories = categoryRepository.findAll();
+
+            // Create a map to store category names and whether user likes each category
+            Map<String, Boolean> preferencesMap = new HashMap<>();
+
+            // Initialize all categories with false (not liked)
+            allCategories.forEach(category -> preferencesMap.put(category.getName(), false));
+
+            // Set true for liked categories
+            likedCategories.forEach(category -> preferencesMap.put(category.getName(), true));
+
+            return preferencesMap;
+        } else {
+            System.out.println("User not found");
+            return null;
+        }
     }
 }

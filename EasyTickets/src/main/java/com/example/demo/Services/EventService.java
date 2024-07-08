@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 import com.example.demo.DTOs.EventDTO;
+import com.example.demo.Entities.Category;
 import com.example.demo.Entities.Event;
 import com.example.demo.Entities.User;
 import com.example.demo.Repositories.EventRepository;
@@ -45,28 +46,49 @@ public class EventService {
      2. Order by his preferences (arranged according to the probability that he will like it).
      3. Just events with available seats
      */
-//    public List<Event> getUpcomingEvents(String token) {
-//        // Get current date
-//        Date currentDate = new Date();
-//
-//        // Get user's liked categories if user exists
-//        Optional<User> optionalUser = getUserFromToken(token);
-//        Set<Category> likedCategories = optionalUser.map(User::getLikedCategories).orElse(null);
-//
-//        // Fetch upcoming events with available seats, ordered by preference
-//        return eventRepository.findUpcomingEventsWithAvailableSeatsOrderedByPreference(currentDate, likedCategories);
-//    }
+    public List<Event> getUpcomingEvents(String token) {
+        // Get current date
+        Date currentDate = new Date();
 
-        public List<Event> getUpcomingEvents(String token) {
-            // Get current date
-            Date currentDate = new Date();
+        // Get current User by token
+        Optional<User> optionalUser = getUserFromToken(token);
+        User user = null;
 
-            // Get user's liked categories if user exists
-
-            return eventRepository.findBySeatsAvailableIsTrue();
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+        } else {
+            throw new RuntimeException("User not found");
         }
 
-        private Optional<User> getUserFromToken(String token) {
+        // Get user's liked categories if user exists
+        Set<Category> likedCategories = user.getLikedCategories();
+
+        // Get upcoming events with available seats and date >= currentDate
+        List<Event> events = eventRepository.findBySeatsAvailableIsTrueAndDateGreaterThanEqual(currentDate);
+
+        // Custom sorting: Sort events so that events related to liked categories appear first
+        events.sort((e1, e2) -> {
+            boolean e1Liked = isEventRelatedToLikedCategory(e1, likedCategories);
+            boolean e2Liked = isEventRelatedToLikedCategory(e2, likedCategories);
+
+            // Sort in descending order: liked categories first, then others
+            if (e1Liked && !e2Liked) {
+                return -1;
+            } else if (!e1Liked && e2Liked) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        return events;
+    }
+
+    private boolean isEventRelatedToLikedCategory(Event event, Set<Category> likedCategories) {
+        return likedCategories.contains(event.getCategory());
+    }
+
+    private Optional<User> getUserFromToken(String token) {
         String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
         return userRepository.findByEmail(email);
     }

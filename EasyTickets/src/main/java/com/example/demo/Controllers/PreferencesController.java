@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -17,7 +18,6 @@ public class PreferencesController {
     private final CategoriesService categoriesService;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
-
 
     public PreferencesController(CategoriesService categoriesService, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.categoriesService = categoriesService;
@@ -77,5 +77,19 @@ public class PreferencesController {
     @GetMapping("/all")
     public List<Category> getAllPossible(){
         return categoriesService.getAllPossible();
+    }
+
+    @GetMapping("/map")
+    public ResponseEntity<Map<String, Boolean>> getUserPreferencesMapping(
+            @RequestHeader(name = "Authorization") String token) {
+        try {
+            Map<String, Boolean> likedCategories = categoriesService.getUserPreferencesMapping(token);
+            return ResponseEntity.ok(likedCategories);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // Or handle with an appropriate error message
+        }
     }
 }
