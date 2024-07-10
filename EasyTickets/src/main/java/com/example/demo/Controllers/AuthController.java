@@ -1,5 +1,6 @@
 package com.example.demo.Controllers;
 import com.example.demo.Services.AuthService;
+import com.example.demo.Services.EmailService;
 import com.example.demo.mysecurity.JwtHelper;
 import com.example.demo.requests.LoginRequest;
 import com.example.demo.requests.LoginResponse;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
+    private final EmailService emailService;
 
-    public AuthController(AuthenticationManager authenticationManager, AuthService authService) {
+    public AuthController(AuthenticationManager authenticationManager, AuthService authService, EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.authService = authService;
+        this.emailService = emailService;
     }
 
     @PostMapping(value = "/login")
@@ -33,6 +36,8 @@ public class AuthController {
 
         String token = JwtHelper.generateToken(request.email());
         authService.addLoginAttempt(request.email(), true);
+
+        emailService.sendOtpEmail("yarintabashi@gmail.com", "1234");
         return ResponseEntity.ok(new LoginResponse(request.email(), token));
     }
 
