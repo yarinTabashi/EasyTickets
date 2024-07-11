@@ -5,11 +5,14 @@ import com.example.demo.Repositories.LoginAttemptRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.CustomExceptions.DuplicateException;
 import com.example.demo.requests.SignupRequest;
+import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 
 @Service
 @Transactional
@@ -31,7 +34,7 @@ public class AuthService {
             throw new DuplicateException(String.format("User with the email address '%s' already exists.", request.email()));
         }
 
-        User user = new User(request.first_name(), request.last_name(), request.username(), request.email(), passwordEncoder.encode(request.password()));
+        User user = new User(request.first_name(), request.last_name(), request.username(), request.email(), passwordEncoder.encode(request.password()), generateTOTPSecretKey(request.username()));
         userRepository.save(user);
     }
 
@@ -40,7 +43,44 @@ public class AuthService {
         loginAttemptRepository.save(new LoginAttempt(email, success, LocalDateTime.now()));
     }
 
-//    public List<LoginAttempt> findRecentLoginAttempts(String email) {
-//        return loginAttemptRepository.findByEmailOrderByCreatedAtDesc(email);
-//    }
+    // Called during the register
+    private String generateTOTPSecretKey(String email) {
+        GoogleAuthenticatorConfig config = new GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder()
+                .setTimeStepSizeInMillis(60000) // Set time step size to 60 seconds (1 minute)
+                .build();
+
+        GoogleAuthenticator gAuth = new GoogleAuthenticator(config);
+        GoogleAuthenticatorKey key = gAuth.createCredentials();
+        return key.getKey();
+    }
+
+    // Called when want to verify the user
+    public int getTOTP(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email); // Retrieve the secret key from the database
+        if (optionalUser.isPresent()){
+            String secretKey = optionalUser.get().getSecret_key();
+            GoogleAuthenticatorConfig config = new GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder()
+                    .setTimeStepSizeInMillis(60000) // Set time step size to 60 seconds (1 minute)
+                    .build();
+
+            GoogleAuthenticator gAuth = new GoogleAuthenticator(config);
+            return gAuth.getTotpPassword(secretKey); // Create TOTP (according to the user's secret key and time).
+        }
+        return -1;
+    }
+
+    public boolean verifyTOTP(String email, int verificationCode) {
+        Optional<User> optionalUser = userRepository.findByEmail(email); // Retrieve the secret key from the database
+        if (optionalUser.isPresent()){
+            String secretKey = optionalUser.get().getSecret_key();
+            GoogleAuthenticatorConfig config = new GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder()
+                    .setTimeStepSizeInMillis(60000) // Set time step size to 60 seconds (1 minute)
+                    .build();
+
+            GoogleAuthenticator gAuth = new GoogleAuthenticator(config);
+            return gAuth.authorize(secretKey, verificationCode);
+        }
+        System.out.println("Cannot find user's secret key in order to verify TOTP.");
+        return false;
+    }
 }

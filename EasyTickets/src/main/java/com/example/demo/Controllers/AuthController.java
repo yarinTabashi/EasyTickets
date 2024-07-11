@@ -5,12 +5,14 @@ import com.example.demo.mysecurity.JwtHelper;
 import com.example.demo.requests.LoginRequest;
 import com.example.demo.requests.LoginResponse;
 import com.example.demo.requests.SignupRequest;
+import com.example.demo.requests.TOTPRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/auth")
@@ -37,7 +39,7 @@ public class AuthController {
         String token = JwtHelper.generateToken(request.email());
         authService.addLoginAttempt(request.email(), true);
 
-        emailService.sendOtpEmail("yarintabashi@gmail.com", "1234");
+        //emailService.sendOtpEmail("yarintabashi@gmail.com", "1234");
         return ResponseEntity.ok(new LoginResponse(request.email(), token));
     }
 
@@ -45,5 +47,25 @@ public class AuthController {
     public ResponseEntity<Void> signup(@RequestBody SignupRequest requestDto) {
         authService.signup(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // Generates totp and send it with an email to the user.
+    @PostMapping("/send-otp")
+    public ResponseEntity<Void> totpVerification(@RequestBody String email) throws IOException {
+        int totp = authService.getTOTP(email);
+        if (totp != -1){
+            System.out.println("OTP is: " + totp);
+            //emailService.sendOtpEmail("yarintabashi@gmail.com", Integer.toString(totp)); // Send TOTP via email
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Boolean> verifyTotp(@RequestBody TOTPRequest totpRequest) throws IOException {
+        if (authService.verifyTOTP(totpRequest.email(), totpRequest.otp())){
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
     }
 }
