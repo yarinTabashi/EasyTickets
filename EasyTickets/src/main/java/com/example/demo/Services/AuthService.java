@@ -4,6 +4,7 @@ import com.example.demo.Entities.User;
 import com.example.demo.Repositories.LoginAttemptRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.CustomExceptions.DuplicateException;
+import com.example.demo.mysecurity.JwtHelper;
 import com.example.demo.requests.SignupRequest;
 import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @Service
 @Transactional
@@ -82,5 +84,13 @@ public class AuthService {
         }
         System.out.println("Cannot find user's secret key in order to verify TOTP.");
         return false;
+    }
+
+    public void updatePassword(String token, String newPassword) {
+        String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isPresent()) {
+            existingUser.get().setPassword(passwordEncoder.encode(newPassword));
+        }
     }
 }

@@ -30,7 +30,6 @@ public class PreferencesController {
     public ResponseEntity<String> likeCategories(
             @RequestHeader(name = "Authorization") String token,
             @RequestBody List<Long> categoryIds) {
-
         try {
             categoriesService.likeCategories(token, categoryIds);
             return ResponseEntity.ok("Categories liked successfully.");
@@ -89,7 +88,7 @@ public class PreferencesController {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null); // Or handle with an appropriate error message
+                    .body(null);
         }
     }
 }

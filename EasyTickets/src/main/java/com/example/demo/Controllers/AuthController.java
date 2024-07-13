@@ -39,13 +39,19 @@ public class AuthController {
         String token = JwtHelper.generateToken(request.email());
         authService.addLoginAttempt(request.email(), true);
 
-        //emailService.sendOtpEmail("yarintabashi@gmail.com", "1234");
         return ResponseEntity.ok(new LoginResponse(request.email(), token));
     }
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody SignupRequest requestDto) {
         authService.signup(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/update-password")
+    public ResponseEntity<Void> updatePassword(@RequestHeader(name = "Authorization") String token,
+                                               @RequestBody String newPassword) {
+        authService.updatePassword(token, newPassword);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -62,10 +68,12 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<Boolean> verifyTotp(@RequestBody TOTPRequest totpRequest) throws IOException {
+    public ResponseEntity<LoginResponse> verifyTotp(@RequestBody TOTPRequest totpRequest) throws IOException {
         if (authService.verifyTOTP(totpRequest.email(), totpRequest.otp())){
-            return ResponseEntity.ok(true);
+            String token = JwtHelper.generateToken(totpRequest.email());
+            authService.addLoginAttempt(totpRequest.email(), true);
+            return ResponseEntity.ok(new LoginResponse(totpRequest.email(), token));
         }
-        return ResponseEntity.ok(false);
+        return ResponseEntity.notFound().build(); // Return 404 if OTP is incorrect
     }
 }
