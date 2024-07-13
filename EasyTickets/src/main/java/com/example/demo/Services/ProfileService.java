@@ -17,19 +17,18 @@ public class ProfileService {
         String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
-            ProfileDTO mapped = mapUserToProfileDTO(optionalUser.get());
+            ProfileDTO mapped = mapUserToProfileDTO(optionalUser.get(), token);
             return Optional.of(mapped);
         } else {
             return Optional.empty(); // User not found
         }
     }
 
-    private ProfileDTO mapUserToProfileDTO(User user) {
-        ProfileDTO profileDTO = new ProfileDTO(user.getFirst_name(), user.getLast_name(), user.getEmail());
+    private ProfileDTO mapUserToProfileDTO(User user, String jwt) {
+        ProfileDTO profileDTO = new ProfileDTO(user.getFirst_name(), user.getLast_name(), user.getEmail(), jwt.replace("Bearer ", ""));
         return profileDTO;
     }
 
-    // TODO: FIX IT - the update causes a crash with the error - user not found.
     public void setUserDetails(String token, ProfileDTO profileDTO) {
         String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
         Optional<User> optionalUser = userRepository.findByEmail(email);

@@ -18,7 +18,7 @@ public class CategoriesService {
     private final UserRepository userRepository;
 
     @Autowired
-    public CategoriesService(CategoryRepository categoryRepository, UserRepository userRepository){
+    public CategoriesService(CategoryRepository categoryRepository, UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
     }
@@ -120,5 +120,39 @@ public class CategoriesService {
             System.out.println("User not found");
             return null;
         }
+    }
+
+    public boolean setUserPreferencesMapping(String token, Map<String, Boolean> updatedPreferencesMap) {
+        String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Set<Category> previousLikedCategories = user.getLikedCategories();
+
+            for (Map.Entry<String, Boolean> entry : updatedPreferencesMap.entrySet()) {
+                Category category = categoryRepository.findCategoryByName(entry.getKey());
+
+                if (category != null) {
+                    boolean isLiked = entry.getValue();
+
+                    if (isLiked) {
+                        // Add category to liked categories if not already liked
+                        if (!previousLikedCategories.contains(category)) {
+                            user.getLikedCategories().add(category);
+                        }
+                    } else {
+                        // Remove category from liked categories if already liked
+                        if (previousLikedCategories.contains(category)) {
+                            user.getLikedCategories().remove(category);
+                        }
+                    }
+                }
+            }
+            //categoryRepository.save(category);
+            userRepository.save(user); // Save the updated user entity
+            return true; // Return true if preferences were successfully updated
+        }
+        return false; // Return false if user is not found by email
     }
 }

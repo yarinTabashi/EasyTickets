@@ -37,7 +37,7 @@ public class User {
     @JsonIgnore
     @JoinTable(
             name = "user_preferences",
-            joinColumns = @JoinColumn(name = "user"),
+            joinColumns = @JoinColumn(name = "`user`"), // Use backticks to escape 'user' as a column name (reserved word)
             inverseJoinColumns = @JoinColumn(name = "category"))
     Set<Category> likedCategories;
 

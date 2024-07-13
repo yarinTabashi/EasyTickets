@@ -60,7 +60,6 @@ public class PreferencesController {
     @GetMapping()
     public ResponseEntity<Set<CategoryDTO>> getLikedCategories(
             @RequestHeader(name = "Authorization") String token) {
-
         try {
             Set<CategoryDTO> likedCategories = categoriesService.getAllLikedCategories(token);
             return ResponseEntity.ok(likedCategories);
@@ -76,6 +75,23 @@ public class PreferencesController {
     @GetMapping("/all")
     public List<Category> getAllPossible(){
         return categoriesService.getAllPossible();
+    }
+
+    @PostMapping("/map")
+    public ResponseEntity<Void> setUserPreferencesMapping(@RequestHeader(name = "Authorization") String token,
+                                                          @RequestBody Map<String, Boolean> preferencesMap) {
+        try {
+            boolean isUpdateSucceed = categoriesService.setUserPreferencesMapping(token, preferencesMap);
+            if (isUpdateSucceed) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/map")
