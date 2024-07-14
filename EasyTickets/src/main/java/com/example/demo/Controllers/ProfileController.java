@@ -1,7 +1,6 @@
 package com.example.demo.Controllers;
 import com.example.demo.DTOs.ProfileDTO;
 import com.example.demo.Services.ProfileService;
-import com.example.demo.mysecurity.JwtHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -19,6 +19,7 @@ public class Seat implements Serializable {
     private BigDecimal price;
     @ManyToOne
     @JoinColumn(name = "event")
+    //@JsonIgnore
     private Event event;
 
     public Seat(){

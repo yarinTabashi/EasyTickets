@@ -10,13 +10,15 @@ public class Reservation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "`user`")
     private User user;
 
     @Column(name = "reservation_date")
     private Date reservationDate;
 
-    @Column(name = "seat")
+    //@Column(name = "seat")
+    @ManyToOne
+    @JoinColumn(name = "seat")
     private Seat seat;
 
     public Reservation(){

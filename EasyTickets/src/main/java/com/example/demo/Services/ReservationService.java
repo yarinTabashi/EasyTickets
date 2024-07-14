@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 import com.example.demo.Entities.Reservation;
+import com.example.demo.Entities.Seat;
 import com.example.demo.Entities.User;
 import com.example.demo.Repositories.ReservationRepository;
 import com.example.demo.Repositories.SeatRepository;
@@ -25,27 +26,24 @@ public class ReservationService {
     public boolean reserve(String token, Long seatId) {
         // Get the user
         Optional<User> optionalUser = getUserFromToken(token);
-        User user;
-        if (optionalUser.isPresent()){
-            user = optionalUser.get();
-        }
-        else {
-            throw new RuntimeException("User not found");
-        }
-
-        // Mark the seat as unavailable
-
+        User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
 
         // Validate the required seat
+        Optional<Seat> optionalSeat = seatRepository.findById(seatId);
+        Seat seat = optionalSeat.orElseThrow(() -> new RuntimeException("Seat not found"));
 
         // Create a reservation object
-        Reservation reservation = new Reservation(user, new Date(), seatRepository.getById(seatId));
+        Reservation reservation = new Reservation(user, new Date(), seat);
         reservationRepository.save(reservation);
         return true;
     }
 
-    public List<Reservation> getAll(String token){
-        return null;
+    public List<Reservation> getAll(String token) {
+        // Get the user
+        Optional<User> optionalUser = getUserFromToken(token);
+        User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
+
+        return reservationRepository.findByUser(user); // Assuming you have this method in the repository
     }
 
     private Optional<User> getUserFromToken(String token) {
