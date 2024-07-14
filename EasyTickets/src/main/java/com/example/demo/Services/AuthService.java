@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @Service
 @Transactional

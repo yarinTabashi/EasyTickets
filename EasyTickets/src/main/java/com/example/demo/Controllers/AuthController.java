@@ -14,6 +14,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
+/**
+ * Controller class for handling authentication-related HTTP requests.
+ * Provides endpoints for user login, signup, password update, OTP generation and verification.
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
