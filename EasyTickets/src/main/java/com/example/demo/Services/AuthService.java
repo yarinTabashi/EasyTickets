@@ -28,6 +28,12 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Registers a new user based on the provided signup request.
+     *
+     * @param request SignupRequest object containing user details.
+     * @throws DuplicateException if a user with the same email already exists.
+     */
     @Transactional
     public void signup(SignupRequest request) {
         Optional<User> existingUser = userRepository.findByEmail(request.email());
@@ -39,12 +45,23 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    /**
+     * Saves a login attempt record.
+     *
+     * @param email   Email of the user attempting to login.
+     * @param success Boolean indicating if the login attempt was successful.
+     */
     @Transactional
     public void addLoginAttempt(String email, boolean success) {
         loginAttemptRepository.save(new LoginAttempt(email, success, LocalDateTime.now()));
     }
 
-    // Called during the register
+    /**
+     * Generates a new TOTP secret key for the user during registration.
+     *
+     * @param email Email of the user for whom the secret key is generated.
+     * @return TOTP secret key.
+     */
     private String generateTOTPSecretKey(String email) {
         GoogleAuthenticatorConfig config = new GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder()
                 .setTimeStepSizeInMillis(60000) // Set time step size to 60 seconds (1 minute)
@@ -55,7 +72,12 @@ public class AuthService {
         return key.getKey();
     }
 
-    // Called when want to verify the user
+    /**
+     * Retrieves the TOTP for the user based on their stored secret key.
+     *
+     * @param email Email of the user for whom TOTP is generated.
+     * @return TOTP code.
+     */
     public int getTOTP(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email); // Retrieve the secret key from the database
         if (optionalUser.isPresent()){
@@ -70,6 +92,13 @@ public class AuthService {
         return -1;
     }
 
+    /**
+     * Verifies the provided TOTP against the user's stored secret key.
+     *
+     * @param email            Email of the user for whom TOTP is verified.
+     * @param verificationCode TOTP code to verify.
+     * @return True if the verification succeeds, false otherwise.
+     */
     public boolean verifyTOTP(String email, int verificationCode) {
         Optional<User> optionalUser = userRepository.findByEmail(email); // Retrieve the secret key from the database
         if (optionalUser.isPresent()){
@@ -85,6 +114,12 @@ public class AuthService {
         return false;
     }
 
+    /**
+     * Updates the password for the user identified by the JWT token.
+     *
+     * @param token      JWT token containing user information.
+     * @param newPassword New password to be set.
+     */
     public void updatePassword(String token, String newPassword) {
         String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
         Optional<User> existingUser = userRepository.findByEmail(email);

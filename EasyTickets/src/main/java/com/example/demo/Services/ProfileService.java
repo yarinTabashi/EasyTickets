@@ -13,15 +13,11 @@ public class ProfileService {
         this.userRepository = userRepository;
     }
 
-    public Optional<ProfileDTO> getUserDetails(String token){
-        String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            ProfileDTO mapped = mapUserToProfileDTO(optionalUser.get(), token);
-            return Optional.of(mapped);
-        } else {
-            return Optional.empty(); // User not found
-        }
+    public ProfileDTO getUserDetails(String token){
+        // Get the user
+        Optional<User> optionalUser = getUserFromToken(token);
+        User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
+        return mapUserToProfileDTO(user, token);
     }
 
     private ProfileDTO mapUserToProfileDTO(User user, String jwt) {

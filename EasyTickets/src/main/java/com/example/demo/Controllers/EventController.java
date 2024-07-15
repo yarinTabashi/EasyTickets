@@ -19,11 +19,11 @@ public class EventController {
         this.seatService = seatService;
     }
 
-    // Retrieve by event id
-    @GetMapping("/{id}")
-    public Event getEventById(@PathVariable Long id) {
-        return eventService.getEventById(id);
-    }
+//    // Retrieve by event id
+//    @GetMapping("/{id}")
+//    public Event getEventById(@PathVariable Long id) {
+//        return eventService.getEventById(id);
+//    }
 
     @PostMapping()
     @Transactional

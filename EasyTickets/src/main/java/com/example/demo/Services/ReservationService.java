@@ -74,7 +74,7 @@ public class ReservationService {
             }
         }
 
-        // If a closest reservation is found, return its associated Event
+        // If the closest reservation is found, return its associated Event
         if (closestReservation != null) {
             return closestReservation.getSeat().getEvent();
         } else {

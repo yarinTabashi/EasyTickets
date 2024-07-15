@@ -5,7 +5,6 @@ import com.example.demo.Services.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/profile")
@@ -18,11 +17,14 @@ public class ProfileController {
 
     @GetMapping
     public ResponseEntity<ProfileDTO> getProfile(@RequestHeader("Authorization") String token){
-        Optional<ProfileDTO> optionalProfileDTO = profileService.getUserDetails(token);
-
-        return optionalProfileDTO
-                .map(ResponseEntity::ok) // Map to ResponseEntity.ok() if present
-                .orElse(ResponseEntity.notFound().build()); // Return 404 if empty
+        try {
+            ProfileDTO profileDTO = profileService.getUserDetails(token);
+            return ResponseEntity.ok(profileDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/update")

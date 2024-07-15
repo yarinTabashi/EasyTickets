@@ -10,18 +10,23 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+/**
+ * Service class for sending emails and handling email-related operations.
+ */
 @Service
 public class EmailService {
-//    @Value("${email.username}")
-//    private String emailUsername;
-//
-//    @Value("${email.password}")
-//    private String emailPassword;
     private String emailUsername = "ticketsa902@gmail.com";
     private String emailPassword = "nikajhwpgnspmvgb";
 
+    /**
+     * Sends an email using SMTP protocol with Gmail settings.
+     *
+     * @param to          Email address of the recipient.
+     * @param title       Subject of the email.
+     * @param htmlContent HTML content of the email body.
+     * @return true if the email was sent successfully, false otherwise.
+     */
     public boolean sendEmail(String to, String title, String htmlContent) {
-        // Sender's email ID needs to be mentioned
         String from = emailUsername;
 
         // Get system properties
@@ -69,6 +74,14 @@ public class EmailService {
         }
     }
 
+    /**
+     * Reads HTML content from a resource file in the classpath and returns it as a String.
+     * This method facilitates sending emails using HTML templates.
+     *
+     * @param resourceName Name of the resource file to read.
+     * @return String containing the content of the HTML resource file.
+     * @throws IOException if there is an error reading the resource file.
+     */
     public String readHtmlFromResource(String resourceName) throws IOException {
         ClassPathResource resource = new ClassPathResource(resourceName);
         try (InputStream inputStream = resource.getInputStream()) {
@@ -77,6 +90,14 @@ public class EmailService {
         }
     }
 
+    /**
+     * Sends an OTP (One-Time Password) email to the specified recipient.
+     *
+     * @param to      Email address of the recipient.
+     * @param otpCode OTP code to be included in the email.
+     * @return true if the OTP email was sent successfully, false otherwise.
+     * @throws IOException if there is an error reading the OTP email template.
+     */
     public boolean sendOtpEmail(String to, String otpCode) throws IOException {
         try
         {

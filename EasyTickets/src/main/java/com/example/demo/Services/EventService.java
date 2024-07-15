@@ -4,7 +4,6 @@ import com.example.demo.Entities.Category;
 import com.example.demo.Entities.Event;
 import com.example.demo.Entities.User;
 import com.example.demo.Repositories.EventRepository;
-import com.example.demo.Repositories.SeatRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.mysecurity.JwtHelper;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,12 +14,10 @@ import java.util.*;
 public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-    private final SeatRepository seatRepository;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository, SeatRepository seatRepository){
+    public EventService(EventRepository eventRepository, UserRepository userRepository){
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
-        this.seatRepository = seatRepository;
     }
 
     public Event getEventById(Long id) {
@@ -51,15 +48,9 @@ public class EventService {
         // Get current date
         Date currentDate = new Date();
 
-        // Get current User by token
+        // Get the user
         Optional<User> optionalUser = getUserFromToken(token);
-        User user = null;
-
-        if (optionalUser.isPresent()) {
-            user = optionalUser.get();
-        } else {
-            throw new RuntimeException("User not found");
-        }
+        User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
 
         // Get user's liked categories if user exists
         Set<Category> likedCategories = user.getLikedCategories();
