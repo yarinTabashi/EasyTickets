@@ -1,5 +1,6 @@
 package com.example.demo.Controllers;
 import com.example.demo.DTOs.ProfileDTO;
+import com.example.demo.DTOs.UpdateProfileDTO;
 import com.example.demo.Services.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,12 @@ public class ProfileController {
                 .orElse(ResponseEntity.notFound().build()); // Return 404 if empty
     }
 
-    @PutMapping
-    public ResponseEntity<Void>  updateProfile(@RequestHeader("Authorization") String token, ProfileDTO profileDTO){
-        profileService.setUserDetails(token, profileDTO);
+    @PutMapping("/update")
+    public ResponseEntity<Void> updateProfile(
+            @RequestHeader("Authorization") String token,
+            @RequestBody UpdateProfileDTO request) {
+
+        profileService.setUserDetails(token, request.firstName(), request.lastName(), request.email());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

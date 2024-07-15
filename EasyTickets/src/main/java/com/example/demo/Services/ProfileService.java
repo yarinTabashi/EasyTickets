@@ -29,22 +29,19 @@ public class ProfileService {
         return profileDTO;
     }
 
-    public void setUserDetails(String token, ProfileDTO profileDTO) {
+    public void setUserDetails(String token, String firstName, String lastName, String email) {
+        // Get the user
+        Optional<User> optionalUser = getUserFromToken(token);
+        User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFirst_name(firstName);
+        user.setLast_name(lastName);
+        user.setEmail(email);
+        userRepository.save(user);
+    }
+
+    private Optional<User> getUserFromToken(String token) {
         String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            // Update user fields based on profileDTO
-            user.setFirst_name(profileDTO.first_name());
-            user.setLast_name(profileDTO.last_name());
-            user.setEmail(profileDTO.email());
-
-            userRepository.save(user);
-        } else {
-            // Handle case where user with the email from token is not found
-            throw new RuntimeException("User not found for email: " + email);
-        }
+        return userRepository.findByEmail(email);
     }
 }
