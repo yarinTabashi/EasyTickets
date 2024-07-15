@@ -25,6 +25,7 @@ public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
 
+    int mytry; /*Commit try 15/07/2024 19:04*/
     public AuthController(AuthenticationManager authenticationManager, AuthService authService, EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.authService = authService;
