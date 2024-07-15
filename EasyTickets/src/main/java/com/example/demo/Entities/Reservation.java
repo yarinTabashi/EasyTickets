@@ -16,18 +16,21 @@ public class Reservation {
     @Column(name = "reservation_date")
     private Date reservationDate;
 
-    //@Column(name = "seat")
     @ManyToOne
     @JoinColumn(name = "seat")
     private Seat seat;
 
+    @Column(name = "serial_num")
+    private Integer serialNum;
+
     public Reservation(){
     }
 
-    public Reservation(User user, Date reservationDate, Seat seat) {
+    public Reservation(User user, Date reservationDate, Seat seat, Integer serialNum) {
         this.user = user;
         this.reservationDate = reservationDate;
         this.seat = seat;
+        this.serialNum = serialNum;
     }
 
     public Long getId() {
@@ -60,5 +63,13 @@ public class Reservation {
 
     public void setSeat(Seat seat) {
         this.seat = seat;
+    }
+
+    public Integer getSerialNum() {
+        return serialNum;
+    }
+
+    public void setSerialNum(Integer serialNum) {
+        this.serialNum = serialNum;
     }
 }

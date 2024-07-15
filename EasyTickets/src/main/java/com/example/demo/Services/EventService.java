@@ -35,6 +35,7 @@ public class EventService {
         event.setDate(eventDTO.date());
         event.setVenue(eventDTO.venue());
         event.setCategory(eventDTO.category());
+        event.setUrl(eventDTO.url());
 
         // Save event to make it persistent
         event = eventRepository.save(event);

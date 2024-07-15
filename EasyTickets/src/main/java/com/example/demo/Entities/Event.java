@@ -31,16 +31,20 @@ public class Event {
     @JsonIgnore
     private List<Seat> seats;
 
+    @Column(name = "url")
+    private String url;
+
     public Event(){
 
     }
 
-    public Event(String name, String description, Date date, String venue, Category category) {
+    public Event(String name, String description, Date date, String venue, Category category, String url) {
         this.name = name;
         this.description = description;
         this.date = date;
         this.venue = venue;
         this.category = category;
+        this.url = url;
     }
 
     public Long getId() {
@@ -97,5 +101,13 @@ public class Event {
 
     public void setSeats(List<Seat> seats) {
         this.seats = seats;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

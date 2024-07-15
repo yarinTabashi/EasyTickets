@@ -1,4 +1,5 @@
 package com.example.demo.Controllers;
+import com.example.demo.Entities.Event;
 import com.example.demo.Entities.Reservation;
 import com.example.demo.Services.ReservationService;
 import com.example.demo.Services.SeatService;
@@ -42,5 +43,19 @@ public class ReservationController {
     @GetMapping()
         public List<Reservation> getAll(@RequestHeader("Authorization") String token){
         return reservationService.getAll(token);
+    }
+
+    @GetMapping("/closest")
+    public ResponseEntity<Event> getCloseEvent(@RequestHeader("Authorization") String token) {
+        try {
+            Event event = reservationService.getCloseEvent(token);
+            if (event != null) {
+                return ResponseEntity.ok(event); // Return the event if found
+            } else {
+                return ResponseEntity.notFound().build(); // Return 404 if no event found
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Handle internal server error
+        }
     }
 }
