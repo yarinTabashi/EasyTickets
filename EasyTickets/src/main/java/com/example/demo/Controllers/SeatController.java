@@ -23,14 +23,4 @@ public class SeatController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
-    @PostMapping("/reserve/{seatId}")
-    public ResponseEntity<String> reserveSeat(@PathVariable Long seatId) {
-        try {
-            seatService.reserveSeat(seatId);
-            return ResponseEntity.ok("Seat reserved successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 }

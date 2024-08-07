@@ -7,6 +7,10 @@ import com.example.demo.Repositories.ReservationRepository;
 import com.example.demo.Repositories.SeatRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.mysecurity.JwtHelper;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.interceptor.CacheEvictOperation;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
@@ -16,12 +20,16 @@ import java.util.Random;
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final SeatRepository seatRepository;
+    private final SeatService seatService;
     private final UserRepository userRepository;
+    private final SeatRepository seatRepository;
+    @Autowired
+    private CacheEvictionService cacheEvictionService;
 
-    public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, SeatRepository seatRepository){
+    public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, SeatService seatService, SeatRepository seatRepository){
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
+        this.seatService = seatService;
         this.seatRepository = seatRepository;
     }
 
@@ -30,13 +38,20 @@ public class ReservationService {
         Optional<User> optionalUser = getUserFromToken(token);
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Validate the required seat
-        Optional<Seat> optionalSeat = seatRepository.findById(seatId);
-        Seat seat = optionalSeat.orElseThrow(() -> new RuntimeException("Seat not found"));
+        // Get the seat (the validation made before)
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new RuntimeException("Seat not found"));
 
         // Create a reservation object
         Reservation reservation = new Reservation(user, new Date(), seat, generateSerialNum());
         reservationRepository.save(reservation);
+
+        // Check if it's the last available seat for the event
+        boolean isLastSeat = seatService.isLastSeat(seat.getEvent().getId());
+        if (isLastSeat) {
+            // Evict the cache for events list associated with the specific event's date
+            cacheEvictionService.evictEventsCache();
+        }
         return true;
     }
 
@@ -82,3 +97,4 @@ public class ReservationService {
         }
     }
 }
+

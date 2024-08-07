@@ -1,12 +1,16 @@
 package com.example.demo.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "event", schema = "public")
-public class Event {
+public class Event implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

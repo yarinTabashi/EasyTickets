@@ -24,12 +24,19 @@ public class ReservationController {
     public ResponseEntity<Void> reserve(@RequestHeader("Authorization") String token, @PathVariable Long seatId) {
         try {
             // Validate seat and mark it as unavailable
+            if (!seatService.isAvailable(seatId)){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
             seatService.reserveSeat(seatId);
 
             // Create reservation object
-            reservationService.reserve(token, seatId);
-
-            return ResponseEntity.status(HttpStatus.CREATED).build(); // Reservation created successfully
+            boolean status = reservationService.reserve(token, seatId);
+            if (status){
+                return ResponseEntity.status(HttpStatus.OK).build(); // Reservation created successfully
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Seat or user not found
         } catch (IllegalArgumentException e) {

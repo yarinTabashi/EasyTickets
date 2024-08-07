@@ -6,23 +6,19 @@ import com.example.demo.Entities.User;
 import com.example.demo.Repositories.EventRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.mysecurity.JwtHelper;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public EventService(EventRepository eventRepository, UserRepository userRepository){
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
-    }
-
-    public Event getEventById(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + id));
     }
 
     public Event createEvent(EventDTO eventDTO){
@@ -39,14 +35,24 @@ public class EventService {
         return event;
     }
 
+    private Date stripTime(Date date) {
+        // Remove time from the date
+        String formattedDate = DATE_FORMAT.format(date);
+        try {
+            return DATE_FORMAT.parse(formattedDate);
+        } catch (Exception e) {
+            throw new RuntimeException("Date parsing error", e);
+        }
+    }
+
     /** The main function to retrieve the possible events. Considering:
      1. Just upcoming events
      2. Order by his preferences (arranged according to the probability that he will like it).
      3. Just events with available seats
      */
     public List<Event> getUpcomingEvents(String token) {
-        // Get current date
-        Date currentDate = new Date();
+        // Create current date object (without the time)
+        Date currentDate = stripTime(new Date());
 
         // Get the user
         Optional<User> optionalUser = getUserFromToken(token);
@@ -55,8 +61,9 @@ public class EventService {
         // Get user's liked categories if user exists
         Set<Category> likedCategories = user.getLikedCategories();
 
-        // Get upcoming events with available seats and date >= currentDate
-        List<Event> events = eventRepository.findBySeatsAvailableIsTrueAndDateGreaterThanEqual(currentDate);
+        // Ensuring the events have available seats and the date is greater than or equal to the currentDate
+        List<Event> events = null;
+        events = eventRepository.findBySeatsAvailableIsTrueAndDateGreaterThanEqual(currentDate);
 
         // Custom sorting: Sort events so that events related to liked categories appear first
         events.sort((e1, e2) -> {

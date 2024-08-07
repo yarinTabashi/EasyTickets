@@ -20,6 +20,24 @@ public class SeatService {
         return seatRepository.findByEventId(eventId);
     }
 
+    public boolean isLastSeat(Long eventId){
+        System.out.println(seatRepository.countByEventIdAndAvailableTrue(eventId));
+        return seatRepository.countByEventIdAndAvailableTrue(eventId) < 1;
+    }
+
+    public boolean isAvailable(Long seatId){
+        // Fetch the seat by ID
+        Optional<Seat> optionalSeat = seatRepository.findById(seatId);
+
+        if (optionalSeat.isPresent()){
+            Seat seat = optionalSeat.get();
+            if (seat.isAvailable()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean reserveSeat(Long seatId) {
         Optional<Seat> optionalSeat = seatRepository.findById(seatId);
         if (optionalSeat.isPresent()) {
