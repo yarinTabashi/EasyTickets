@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.interceptor.CacheEvictOperation;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,8 @@ public class ReservationService {
     private final SeatRepository seatRepository;
     @Autowired
     private CacheEvictionService cacheEvictionService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, SeatService seatService, SeatRepository seatRepository){
         this.reservationRepository = reservationRepository;
@@ -45,6 +48,13 @@ public class ReservationService {
         // Create a reservation object
         Reservation reservation = new Reservation(user, new Date(), seat, generateSerialNum());
         reservationRepository.save(reservation);
+
+        // Create a message to be published
+        String message = String.format("A ticket has just been purchased for this event.");
+        // Create an event-specific channel name
+        String channelName = "purchase-channel-" + seat.getEvent().getId();
+        // Publish the message to the event-specific Redis channel
+        redisTemplate.convertAndSend(channelName, message);
 
         // Check if it's the last available seat for the event
         boolean isLastSeat = seatService.isLastSeat(seat.getEvent().getId());
