@@ -47,10 +47,19 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(request.email(), token));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequest requestDto) {
-        authService.signup(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping(value = "/signup")
+    public ResponseEntity<LoginResponse> login(@RequestBody SignupRequest request) throws Exception {
+        try {
+            authService.signup(request);
+        } catch (BadCredentialsException e) {
+            authService.addLoginAttempt(request.email(), false);
+            throw e;
+        }
+
+        String token = JwtHelper.generateToken(request.email());
+        authService.addLoginAttempt(request.email(), true);
+
+        return ResponseEntity.ok(new LoginResponse(request.email(), token));
     }
 
     @PostMapping("/update-password")

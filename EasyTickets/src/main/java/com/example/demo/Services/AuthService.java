@@ -34,15 +34,29 @@ public class AuthService {
      * @param request SignupRequest object containing user details.
      * @throws DuplicateException if a user with the same email already exists.
      */
-    @Transactional
-    public void signup(SignupRequest request) {
-        Optional<User> existingUser = userRepository.findByEmail(request.email());
-        if (existingUser.isPresent()) {
-            throw new DuplicateException(String.format("User with the email address '%s' already exists.", request.email()));
-        }
+    //@Transactional
+//    public void signup(SignupRequest request) {
+//        Optional<User> existingUser = userRepository.findByEmail(request.email());
+//        if (existingUser.isPresent()) {
+//            throw new DuplicateException(String.format("User with the email address '%s' already exists.", request.email()));
+//        }
+//
+//        User user = new User(request.first_name(), request.last_name(), request.username(), request.email(), passwordEncoder.encode(request.password()), generateTOTPSecretKey(request.username()));
+//        userRepository.save(user);
+//    }
 
-        User user = new User(request.first_name(), request.last_name(), request.username(), request.email(), passwordEncoder.encode(request.password()), generateTOTPSecretKey(request.username()));
-        userRepository.save(user);
+    public void signup(SignupRequest request) {
+        try {
+            Optional<User> existingUser = userRepository.findByEmail(request.email());
+            if (existingUser.isPresent()) {
+                throw new DuplicateException(String.format("User with the email address '%s' already exists.", request.email()));
+            }
+            User user = new User(request.first_name(), request.last_name(), request.username(), request.email(), passwordEncoder.encode(request.password()), generateTOTPSecretKey(request.username()));
+            userRepository.save(user);
+        }
+        catch (Exception e){
+            System.out.println("Error in AuthService.signup: " + e.getMessage());
+        }
     }
 
     /**
@@ -102,6 +116,7 @@ public class AuthService {
     public boolean verifyTOTP(String email, int verificationCode) {
         Optional<User> optionalUser = userRepository.findByEmail(email); // Retrieve the secret key from the database
         if (optionalUser.isPresent()){
+            System.out.println("Email found in the database.");
             String secretKey = optionalUser.get().getSecret_key();
             GoogleAuthenticatorConfig config = new GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder()
                     .setTimeStepSizeInMillis(60000) // Set time step size to 60 seconds (1 minute)
@@ -110,8 +125,10 @@ public class AuthService {
             GoogleAuthenticator gAuth = new GoogleAuthenticator(config);
             return gAuth.authorize(secretKey, verificationCode);
         }
-        System.out.println("Cannot find user's secret key in order to verify TOTP.");
-        return false;
+        else {
+            System.out.println("Cannot find user's secret key in order to verify TOTP.");
+            return false;
+        }
     }
 
     /**
