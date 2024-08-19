@@ -83,6 +83,11 @@ public class EventService {
         return events;
     }
 
+    /**
+     * Check if the event is related to any of the liked categories
+     * @param event Event to check
+     * @param likedCategories Set of liked categories
+     * */
     private boolean isEventRelatedToLikedCategory(Event event, Set<Category> likedCategories) {
         return likedCategories.contains(event.getCategory());
     }

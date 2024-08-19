@@ -30,21 +30,9 @@ public class AuthService {
 
     /**
      * Registers a new user based on the provided signup request.
-     *
      * @param request SignupRequest object containing user details.
      * @throws DuplicateException if a user with the same email already exists.
      */
-    //@Transactional
-//    public void signup(SignupRequest request) {
-//        Optional<User> existingUser = userRepository.findByEmail(request.email());
-//        if (existingUser.isPresent()) {
-//            throw new DuplicateException(String.format("User with the email address '%s' already exists.", request.email()));
-//        }
-//
-//        User user = new User(request.first_name(), request.last_name(), request.username(), request.email(), passwordEncoder.encode(request.password()), generateTOTPSecretKey(request.username()));
-//        userRepository.save(user);
-//    }
-
     public void signup(SignupRequest request) {
         try {
             Optional<User> existingUser = userRepository.findByEmail(request.email());

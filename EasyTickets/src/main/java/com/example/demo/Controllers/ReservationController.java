@@ -20,6 +20,12 @@ public class ReservationController {
         this.seatService = seatService;
     }
 
+    /**
+     * Reserve a seat for the user (every seat belongs to an event)
+     * @param token Authorization token
+     * @param seatId Seat ID to reserve
+     * @return HTTP response
+     */
     @PostMapping("/{seatId}")
     public ResponseEntity<Void> reserve(@RequestHeader("Authorization") String token, @PathVariable Long seatId) {
         try {
@@ -52,6 +58,11 @@ public class ReservationController {
         return reservationService.getAll(token);
     }
 
+    /**
+     * Get the closest upcoming event of the user.
+     * @param token Authorization token
+     * @return HTTP response
+     */
     @GetMapping("/closest")
     public ResponseEntity<Event> getCloseEvent(@RequestHeader("Authorization") String token) {
         try {

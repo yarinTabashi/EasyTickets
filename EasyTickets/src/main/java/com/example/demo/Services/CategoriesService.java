@@ -52,34 +52,6 @@ public class CategoriesService {
         }
     }
 
-    // TODO: FIX IT - Nothing happened
-    public void deleteLikedCategory(String token, List<Long> categoryIds) {
-        String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
-        Long userId = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found for email: " + email))
-                .getId();
-
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            List<Category> categoriesToRemove = categoryRepository.findAllById(categoryIds);
-
-            // Remove categories from the user's liked categories
-            user.getLikedCategories().removeAll(categoriesToRemove);
-
-            // Update bidirectional relationship
-            for (Category category : categoriesToRemove) {
-                category.getLikes().remove(user);
-            }
-
-            userRepository.save(user);
-        } else {
-            throw new EntityNotFoundException("User not found for id: " + userId);
-        }
-    }
-
     public Set<CategoryDTO> getAllLikedCategories(String token) {
         String email = JwtHelper.extractUsername(token.replace("Bearer ", ""));
         Long userId = userRepository.findByEmail(email)

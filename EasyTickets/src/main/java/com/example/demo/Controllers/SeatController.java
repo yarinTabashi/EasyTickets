@@ -14,6 +14,10 @@ public class SeatController {
         this.seatService = seatService;
     }
 
+    /**
+     * Get all seats
+     * @return List of all seats
+     */
     @GetMapping("/{eventId}")
     public ResponseEntity<List<Seat>> getSeatsByEvent(@PathVariable Long eventId) {
         try {

@@ -25,7 +25,13 @@ public class PreferencesController {
         this.categoryRepository = categoryRepository;
     }
 
-    // Relates to the user preferences.
+    /**
+     *  Set the user preferences.
+     *  @param token The token of the user.
+     *  @param categoryIds The list of category ids to be liked.
+     *  @return A response entity with a message.
+     *  @throws EntityNotFoundException If the user or category is not found.
+     * */
     @PostMapping()
     public ResponseEntity<String> likeCategories(
             @RequestHeader(name = "Authorization") String token,
@@ -41,22 +47,12 @@ public class PreferencesController {
         }
     }
 
-    @DeleteMapping()
-    public ResponseEntity<String> deleteLikedCategory(
-            @RequestHeader(name = "Authorization") String token,
-            @RequestBody List<Long> categoryIds) {
-
-        try {
-            categoriesService.deleteLikedCategory(token, categoryIds);
-            return ResponseEntity.ok("Category unliked successfully.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while processing your request.");
-        }
-    }
-
+    /**
+     *  Get the liked categories of the user.
+     *  @param token The token of the user.
+     *  @return A response entity with the list of liked categories.
+     *  @throws EntityNotFoundException If the user is not found.
+     * */
     @GetMapping()
     public ResponseEntity<Set<CategoryDTO>> getLikedCategories(
             @RequestHeader(name = "Authorization") String token) {
@@ -71,12 +67,22 @@ public class PreferencesController {
         }
     }
 
-    // Returns all the categories.
+    /**
+     *  Get all possible categories.
+     *  @return A list of all possible categories.
+     * */
     @GetMapping("/all")
     public List<Category> getAllPossible(){
         return categoriesService.getAllPossible();
     }
 
+    /**
+     *  Set the user preferences mapping.
+     *  @param token The token of the user.
+     *  @param preferencesMap The map of category ids and their preferences (true or false).
+     *  @return A response entity with a message.
+     *  @throws EntityNotFoundException If the user is not found.
+     * */
     @PostMapping("/map")
     public ResponseEntity<Void> setUserPreferencesMapping(@RequestHeader(name = "Authorization") String token,
                                                           @RequestBody Map<String, Boolean> preferencesMap) {
@@ -94,6 +100,12 @@ public class PreferencesController {
         }
     }
 
+    /**
+     *  Get the user preferences mapping.
+     *  @param token The token of the user.
+     *  @return A response entity with the user preferences mapping.
+     *  @throws EntityNotFoundException If the user is not found.
+     * */
     @GetMapping("/map")
     public ResponseEntity<Map<String, Boolean>> getUserPreferencesMapping(
             @RequestHeader(name = "Authorization") String token) {

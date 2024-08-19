@@ -2,6 +2,7 @@ package com.example.demo.Entities;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+// This class represents the login attempts made by the users, used for tracking.
 @Entity
 @Table(name = "login_attempt", schema = "public")
 public class LoginAttempt {

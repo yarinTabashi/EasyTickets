@@ -25,6 +25,11 @@ public class SeatService {
         return seatRepository.countByEventIdAndAvailableTrue(eventId) < 1;
     }
 
+    /**
+     * Check if a seat is available
+     * @param seatId The ID of the seat to be checked
+     * @return true if the seat is available, false otherwise
+     * */
     public boolean isAvailable(Long seatId){
         // Fetch the seat by ID
         Optional<Seat> optionalSeat = seatRepository.findById(seatId);
@@ -38,6 +43,11 @@ public class SeatService {
         return false;
     }
 
+    /**
+     * Reserve a seat for an event
+     * @param seatId The ID of the seat to be reserved
+     * @return true if the seat was successfully reserved, false otherwise
+     * */
     public boolean reserveSeat(Long seatId) {
         Optional<Seat> optionalSeat = seatRepository.findById(seatId);
         if (optionalSeat.isPresent()) {
@@ -54,7 +64,10 @@ public class SeatService {
         }
     }
 
-    // Create seats for new event
+    /**
+     *  Create seats for an event
+     *  @param event The event for which seats are to be created
+     * */
     public void createSeats(Event event) {
         List<Seat> seats = new ArrayList<>();
 

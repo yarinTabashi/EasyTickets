@@ -15,6 +15,11 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
+    /**
+     * Get the profile of the user
+     * @param token The token of the user
+     * @return The profile of the user
+     */
     @GetMapping
     public ResponseEntity<ProfileDTO> getProfile(@RequestHeader("Authorization") String token){
         try {
@@ -27,6 +32,12 @@ public class ProfileController {
         }
     }
 
+    /**
+     * Update some user details.
+     * @param token The token of the user
+     * @param request The new profile details
+     * @return The updated profile
+     */
     @PutMapping("/update")
     public ResponseEntity<Void> updateProfile(
             @RequestHeader("Authorization") String token,
