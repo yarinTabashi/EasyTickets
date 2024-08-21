@@ -1,4 +1,4 @@
-package com.example.demo.requests;
+package com.example.demo.DTOs;
 import com.example.demo.Entities.LoginAttempt;
 import java.time.LocalDateTime;
 

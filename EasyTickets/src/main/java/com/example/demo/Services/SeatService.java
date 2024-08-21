@@ -3,6 +3,8 @@ import com.example.demo.Entities.Event;
 import com.example.demo.Entities.Seat;
 import com.example.demo.Repositories.SeatRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +32,11 @@ public class SeatService {
      * @param seatId The ID of the seat to be checked
      * @return true if the seat is available, false otherwise
      * */
+    @Transactional
     public boolean isAvailable(Long seatId){
         // Fetch the seat by ID
-        Optional<Seat> optionalSeat = seatRepository.findById(seatId);
+        //Optional<Seat> optionalSeat = seatRepository.findById(seatId);
+        Optional<Seat> optionalSeat = seatRepository.findByIdForUpdate(seatId);
 
         if (optionalSeat.isPresent()){
             Seat seat = optionalSeat.get();
@@ -48,8 +52,10 @@ public class SeatService {
      * @param seatId The ID of the seat to be reserved
      * @return true if the seat was successfully reserved, false otherwise
      * */
-    public boolean reserveSeat(Long seatId) {
-        Optional<Seat> optionalSeat = seatRepository.findById(seatId);
+    @Transactional
+    public boolean checkAvailableAndReserveSeat(Long seatId) {
+        Optional<Seat> optionalSeat = seatRepository.findByIdForUpdate(seatId);
+
         if (optionalSeat.isPresent()) {
             Seat seat = optionalSeat.get();
             if (seat.isAvailable()) {

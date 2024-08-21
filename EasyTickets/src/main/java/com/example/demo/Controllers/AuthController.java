@@ -2,10 +2,10 @@ package com.example.demo.Controllers;
 import com.example.demo.Services.AuthService;
 import com.example.demo.Services.EmailService;
 import com.example.demo.mysecurity.JwtHelper;
-import com.example.demo.requests.LoginRequest;
-import com.example.demo.requests.LoginResponse;
-import com.example.demo.requests.SignupRequest;
-import com.example.demo.requests.TOTPRequest;
+import com.example.demo.DTOs.LoginRequest;
+import com.example.demo.DTOs.LoginResponse;
+import com.example.demo.DTOs.SignupRequest;
+import com.example.demo.DTOs.TOTPRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -95,7 +95,7 @@ public class AuthController {
         int totp = authService.getTOTP(email);
         if (totp != -1){
             System.out.println("OTP is: " + totp);
-            //emailService.sendOtpEmail("yarintabashi@gmail.com", Integer.toString(totp)); // Send TOTP via email
+            emailService.sendOtpEmail("yarintabashi@gmail.com", Integer.toString(totp)); // Send TOTP via email
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

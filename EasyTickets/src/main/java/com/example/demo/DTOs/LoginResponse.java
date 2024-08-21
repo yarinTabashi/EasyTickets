@@ -1,4 +1,4 @@
-package com.example.demo.requests;
+package com.example.demo.DTOs;
 
 public record LoginResponse(
         String email,

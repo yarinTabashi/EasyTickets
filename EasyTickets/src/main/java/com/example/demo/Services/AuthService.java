@@ -5,7 +5,7 @@ import com.example.demo.Repositories.LoginAttemptRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.CustomExceptions.DuplicateException;
 import com.example.demo.mysecurity.JwtHelper;
-import com.example.demo.requests.SignupRequest;
+import com.example.demo.DTOs.SignupRequest;
 import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;

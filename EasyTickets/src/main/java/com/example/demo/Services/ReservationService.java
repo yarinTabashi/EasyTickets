@@ -41,7 +41,7 @@ public class ReservationService {
         Optional<User> optionalUser = getUserFromToken(token);
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Get the seat (the validation made before)
+        // Get the seat (validation was done previously)
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new RuntimeException("Seat not found"));
 
